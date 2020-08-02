@@ -1,0 +1,189 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+
+    
+    <style type="text/css">
+      #upload {
+        opacity: 0;
+    }
+
+    #upload-label {
+        position: absolute;
+        top: 50%;
+        left: 1rem;
+        transform: translateY(-50%);
+    }
+
+    .image-area {
+        border: 2px dashed rgba(255, 255, 255, 0.7);
+        padding: 1rem;
+        position: relative;
+    }
+
+    .image-area::before {
+        content: 'Uploaded image result';
+        color: #fff;
+        font-weight: bold;
+        text-transform: uppercase;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 0.8rem;
+        z-index: 1;
+    }
+
+    .image-area img {
+        z-index: 2;
+        position: relative;
+    }
+    </style>
+    
+    <script type="text/javascript">
+      
+/*  ==========================================
+    SHOW UPLOADED IMAGE
+* ========================================== */
+function readURL(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+            $('#imageResult')
+                .attr('src', e.target.result);
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+$(function () {
+    $('#upload').on('change', function () {
+        readURL(input);
+    });
+});
+
+/*  ==========================================
+    SHOW UPLOADED IMAGE NAME
+* ========================================== */
+var input = document.getElementById( 'upload' );
+var infoArea = document.getElementById( 'upload-label' );
+
+input.addEventListener( 'change', showFileName );
+function showFileName( event ) {
+  var input = event.srcElement;
+  var fileName = input.files[0].name;
+  infoArea.textContent = 'File name: ' + fileName;
+}
+
+    </script>
+   
+    <title>SIH 2020</title>
+
+
+  </head>
+<body>
+    <header class="container">
+       {%if vinfo%}
+      <div class="alert alert-danger" role="alert">
+       {{ vinfo }}
+      </div>
+      {%endif%}
+     
+      <div class="alert alert-dark" role="alert" style="text-align: center; font-weight: 600">
+        Ministry of Rural Development
+    </div>
+    </header>
+    
+    <section class="container">
+    <div class="card text-center">
+      <div class="card-header">
+        PDF
+      </div>
+      <div class="card-body">
+        <h5 class="card-title">Upload DOCs AS PDF</h5>
+        <p class="card-text">OCR - Extract TEXT </p>
+        <form method="post"  enctype="multipart/form-data">
+        
+        <input name="file" style="font-family: 'Lucida Console', Courier, monospace;" class="btn btn-success" type="file"/>
+        
+        <center style="padding-top: 10px;">
+        <input class="btn btn-primary" type="submit" value="Upload">
+        </center>
+        
+        </form>
+      </div>
+    </div>
+    
+    <div class="accordion" id="accordionExample">
+        <div class="card">
+          
+          <div class="card-header" id="headingOne">
+              <h2 class="mb-0">
+                <div class="row">
+                  <div class="col-3">
+                  <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                    <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                  </button>
+                  </div>
+                  <div class="col-9">
+
+                  <a href="{{ url_for('docs') }}">
+                  <button type="button" class="btn btn-secondary btn-sm" style="float: right;">Select PDF From Database</button>
+                  </a>
+
+                  </div>
+                </div>
+              </h2>
+          </div>
+
+          <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+              <div class="card-body">
+              {% if not pdfname %}
+              <center style="font-size: 20px;">
+                <i style="font-size: 300px;" class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                <br>
+                <i>No PDF selected</i></center>
+              {% else %}
+              <embed src="{{url_for('static', filename=pdfname)}}" style="width: 100%; height: 400px;" />
+              {% endif %}
+              </div>
+              {% if pdfname %}
+              <div class="card-body">
+              {% if text %}
+              <h1>Text in PDF :</h1>
+              {%for page in text %}
+              <p>{{page}}</p><br>
+              {%endfor%}
+              {% endif %}
+              </div>
+
+              <div class="card-body">
+              {% if not dftrue %}
+              <h1>Tables in PDF :</h1>    
+               {% for table in tables %}
+               <p> 
+                  {{ table|safe }}
+              </p><br>
+                {% endfor %}
+              {% endif %}
+              </div>
+              {% endif %}
+          </div>
+        
+        </div>
+      </div>
+      
+  </section>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+
+</body>
+</html>

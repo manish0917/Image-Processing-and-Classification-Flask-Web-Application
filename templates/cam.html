@@ -1,0 +1,64 @@
+<html>
+  <head>
+  	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
+  	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <title>CAM</title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	
+  <!-- CAPTURE SCRIPT -->
+  <script type=text/javascript>
+        $(function() {
+          $('a#capture').bind('click', function() {
+            $.getJSON('/capture',
+                function(data) {
+              //do nothing
+            });
+            return false;
+          });
+        });
+
+        $(function() {
+          $('a#vid').bind('click', function() {
+            $.getJSON('/gif',
+                function(data) {
+              //do nothing
+            });
+            return false;
+          });
+        });
+	</script>
+    
+  </head>
+  <body>
+  	<div>
+  	<div class="card mx-auto" style="width: 1080px">
+  		<!-- WEBCAM -->
+      <img src="{{ url_for('cam') }}" class="card-img-top">
+  		
+      <div class="card-body">
+    		
+        <div class="btn-group btn-group-toggle d-flex justify-content-center" data-toggle="buttons" style="font-size: 100px">
+    		<form style="padding-right: 10px;">
+        		<a href=# id=capture>
+  				<label class="btn btn-secondary">
+    				<input type="button" name="options" id="option2">
+    				<i class="fa fa-camera-retro" aria-hidden="true"></i>
+  				</label>
+  				</a>
+  			</form>
+    		<form>
+        		<a href=# id=vid>
+  				<label class="btn btn-secondary">
+    				<input type="button" name="options" id="option3"> 
+    				<i class="fa fa-video-camera" aria-hidden="true"></i>
+  				</label>
+  				</a>
+  			</form>
+			</div>
+
+  		</div>
+	</div>
+	</div>
+  </body>
+</html>
