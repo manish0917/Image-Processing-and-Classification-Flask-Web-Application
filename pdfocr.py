@@ -12,8 +12,9 @@ os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = r"theravens-5405e084ede1.json"
 
 client = vision.ImageAnnotatorClient()
 
-def performocr():
-    pdf_files ="static/4th_and_6th_Sem_Third_Mid_Term.pdf"
+def performocr(pdffiles):
+    listocr=[]
+    pdf_files =pdffiles
     doc = fitz.open(pdf_files)   #open/read pdf file
     pages = doc.pageCount   #count pages in pdf file
     for i in range(pages):
@@ -21,7 +22,7 @@ def performocr():
         pix = page.getPixmap()  #get image of page
         output = os.path.join("static/images", "Page "+str(i+1)+".jpg")    #output path for image
         pix.writePNG(output)    #write pdf page as image file
-    os.mkdir("static/images")
+
     dir1 = "static/images"
     image_file=[_ for _ in os.listdir(dir1) if _.endswith('jpg')]
     #print(image_file)
@@ -29,11 +30,12 @@ def performocr():
 
     for file_name in image_file:
         image_path = r'static/images'
-
+        print('case 3')
         with io.open(os.path.join(image_path,file_name), 'rb') as image_file:
             content = image_file.read()
 
         # construct an iamge instance
+
         image = vision.types.Image(content=content)
 
         # annotate Image Response
@@ -41,6 +43,7 @@ def performocr():
         df = pd.DataFrame(columns=['locale', 'description'])
 
         texts = response.text_annotations
+        print('case 2')
         for text in texts:
             df = df.append(
                 dict(
@@ -49,12 +52,17 @@ def performocr():
                 ),
                 ignore_index=True
             )
+        listocr.append(df['description'][0])
         print(df['description'][0])
+        delfocr=os.path.join(dir1, file_name)
+        print('case 1')
+        os.remove(delfocr)
 
 
 
-    shutil.rmtree(dir1)
-performocr()
-        
+    #shutil.rmtree(dir1)
+
+    return listocr
+
 
 

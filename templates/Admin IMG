@@ -1,0 +1,107 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+    <title>SIH 2020</title>
+
+
+  </head>
+<body>
+
+    
+    <section class="container">
+    
+    <div class="accordion" id="accordionExample">
+        <div class="card">
+           <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+              <div class="card-body">
+              {% if not imgname %}
+              <center style="font-size: 20px;">
+                <i style="font-size: 300px;" class="fa fa-file-image-o" aria-hidden="true"></i>
+                <br>
+                <i>No Image/PDF selected</i></center>
+              {% else %}
+              <p>
+          <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+            Labels
+          </a>
+          <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample1" role="button" aria-expanded="false" aria-controls="collapseExample1">
+            Objets
+          </a>
+        <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample3" role="button" aria-expanded="false" aria-controls="collapseExample3">
+            OCR
+          </a>
+        </p>
+        <div class="collapse" id="collapseExample">
+            <div class="card card-body">
+              {% if labels %}
+              <h1>Labels :</h1>
+              <p>
+              {%for label in labels%} 
+              
+              <li>{{ label.description }}</li> 
+              
+              {%endfor%} 
+              </p>
+              
+              {% endif %}
+              </div>
+        </div>
+        <div class="collapse" id="collapseExample1">
+              <div class="card card-body">
+              {% if objects %}
+              <h1>Objects :</h1>
+              <p>
+              {%for object in objects%} 
+              <li style="list-style: none;padding: 5px;">{{ object.name }} : 
+                <div class="progress" style="width: 300px;float: left;" >
+                <div class="progress-bar" role="progressbar" style="width: {{ object.score*100|round|int }}%" aria-valuenow="{{ object.score*100|round|int }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+              ({{ object.score*100|round|int }}%)</li> 
+              {%endfor%}
+              </p>
+              
+              {% endif %}
+              </div>
+        </div>
+        
+        <div class="collapse" id="collapseExample3">
+
+              <div class="card card-body">
+              {% if ocr %}
+              <h1>OCR :</h1>
+              <p>{{ ocr }}</p>
+              {% endif %}
+              </div>
+        </div>
+
+ 
+              <img src="{{url_for('static', filename=imgname)}}" class="img-fluid" alt="Responsive image">
+              
+              <form method="post" style="padding-top: 10px;"> 
+              <input type="text" value="{{imgname}}" style="display: none;" name="duplicate">
+              <button type="submit" class="btn btn-warning">Similar Images</button>
+              </form>
+              
+              {% endif %}
+              </div>
+              
+              
+              
+          </div>
+        
+        </div>
+      </div>
+      
+  </section>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+
+</body>
+</html>

@@ -1,4 +1,5 @@
 # import the necessary packages
+import ip
 import os,io
 from pyimagesearch.motion_detection.singlemotiondetector import SingleMotionDetector
 #import object_size
@@ -21,6 +22,8 @@ import duplicate
 #PDF TO IMAGE CONVERSION
 import camelot
 import PyPDF2
+import pdfocr
+import ocrstructured
 #tensorflow
 import tensorflow.keras
 from tensorflow.keras import backend as k
@@ -66,6 +69,166 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 print(os.path.join(app.config['UPLOAD_FOLDER'], 'model.h5'))
 
 
+@app.route('/adminpdf',methods=['GET','POST'])
+def adminpdf():
+    import json
+    global duplist
+
+    with open('imagedata.txt') as json_file:
+        data = json.load(json_file)
+        try:
+            if request.method == 'POST':  
+                #Duplication
+                print('case1')
+                         
+                if request.values.get('filename') != None:
+                    filename=request.values.get('filename')
+                    ocrtext=pdfocr.performocr(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                    ocrstructure=ocrstructured.ocrformat(ocrtext)
+            
+                    try:
+                        pdfFileObj = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                        pdfReader = PyPDF2.PdfFileReader(pdfFileObj)
+                        tables = camelot.read_pdf(os.path.join(app.config['UPLOAD_FOLDER'], filename),pages='1-'+str(pdfReader.getNumPages()))
+                        #tables.export(os.path.join(app.config['UPLOAD_FOLDER'], 'temp.csv'), f='csv', compress=True)
+                        print(pdfReader.getNumPages())
+                        tablist=[]
+            
+                        for i in range(pdfReader.getNumPages()):
+                            tablist.append(Markup(tables[i].df.to_html(classes='data')))
+            
+                        tab=tables[0].df
+                        dftrue=tab.empty
+
+                        ptextlist=[]
+                        for i in range(pdfReader.getNumPages()):
+                            ptextlist.append(pdfReader.getPage(i).extractText())
+
+                        print(ptextlist)
+
+                        print(tablist)
+                
+                        return render_template('pdfdesk.html',pdfname=filename,ocrtext=ocrtext,ocrstructure=ocrstructure,text=ptextlist,dftrue=dftrue,tables=tablist)
+                    except:
+                        print("Something Went wrong")
+
+                    return render_template('pdfdesk.html',pdfname=filename,ocrtext=ocrtext,ocrstructure=ocrstructure)
+
+
+                    
+        except:
+            print('case5')
+            return render_template('pdfdesk.html',vinfo="Something is wrong!!")
+
+        return render_template('adminpdf.html',data=data)
+
+
+
+def validimg(img):
+    import json
+
+    images=img
+    #ip getinfo
+    ipdata=ip.getDetails()
+                
+    #print(ipdata)
+
+
+    data = {}
+    data['image'] = img
+    data['ip'] = ipdata['ip']
+    data['city'] = ipdata['city']
+    data['region'] = ipdata['region']
+    data['country'] = ipdata['country']
+    data['loc'] = ipdata['loc']
+    data['postal'] = ipdata['postal']
+    
+    
+
+    with open('imagedata.txt', 'w') as outfile:
+        json.dump(data, outfile)
+
+@app.route('/admin',methods=['GET','POST'])
+def admin():
+    import json
+    global duplist
+
+    with open('imagedata.txt') as json_file:
+        data = json.load(json_file)
+        try:
+            if request.method == 'POST':  
+                #Duplication
+                print('case1')
+
+                         
+                if request.values.get('filename') != None:
+                    filename=request.values.get('filename')
+                    modelinfo=get_model(filename)
+                    print('case1')
+                    #opencv image object to perform IMG-Processing
+                    cvimg=cv2.imread(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+                    try:
+                        print('case2')
+                        # construct an iamge instance
+                        with io.open(os.path.join(app.config['UPLOAD_FOLDER'], filename), 'rb') as image_file:
+                            content = image_file.read()
+                        image = vision.types.Image(content=content)
+                        print('caseB')
+                        '''/// OCR /// '''
+                        # annotate Image Response
+                        response = client.text_detection(image=image)  # returns TextAnnotation
+                        df = pd.DataFrame(columns=['locale', 'description'])
+
+                        texts = response.text_annotations
+                        for text in texts:
+                            df = df.append(
+                                dict(
+                                    locale=text.locale,
+                                    description=text.description
+                                ),
+                                ignore_index=True
+                            )
+            
+
+                        # Performs label detection on the image file
+                        response = client.label_detection(image=image)
+                        labels = response.label_annotations
+
+                        '''
+                        print('Labels:')
+                        for label in labels:
+                        print(label.description)
+                        '''
+                        print('case C')
+                        #Multiple Object Detection
+                        objects = client.object_localization(image=image).localized_object_annotations
+                        print('case A')
+            
+                        print('Number of objects found: {}'.format(len(objects)))
+                        for object_ in objects:
+                            print('{} (confidence: {})'.format(object_.name, object_.score))
+                            #object_.bounding_poly.normalized_vertices
+                            # Assigning vertices to polygon
+                            #cv2.imwrite('static/img/'+filename, cvimg) 
+                            #print('static/img/'+filename)
+                        print('case3')
+                        return render_template('admindesk.html',imgname=filename,ocr=df['description'][0],labels=labels, objects=objects,modelinfo=modelinfo)
+                    except:
+                        print('case4')
+                        return render_template('admindesk.html',imgname=filename,modelinfo=modelinfo)
+        except:
+            print('case5')
+            return render_template('admindesk.html',vinfo="Something is wrong!!")
+
+        return render_template('admin.html',data=data)
+    
+
+
+
+
+
+
 #tensorflow cnn model
 def get_model(imgfile):
     global model
@@ -81,6 +244,7 @@ def get_model(imgfile):
         info='valid'
     else:
         info='not valid'
+        
         
     return info
 
@@ -101,7 +265,7 @@ def index():
     try:
         if request.method == 'POST':  
             #Duplication
-
+            print('case1')
 
             if request.values.get('duplicate') != None:
                 
@@ -125,23 +289,50 @@ def index():
             if 'file' not in request.files:
                 flash('No file part')
                 return redirect(request.url)
+            print('case2')
             file = request.files['file']
             # if user does not select file, browser also
             # submit an empty part without filename
             if file.filename == '':
                 flash('No selected file')
                 return redirect(request.url)
+            print('case3')
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                
 
+                try:
+                    with Image.open(os.path.join(app.config['UPLOAD_FOLDER'], filename),'r') as im:
+                        pix_val = list(im.getdata())  # get pixel value in RGB format
+                    print('case N')
+                    a= [x for sets in pix_val for x in sets] #Convert list of tuples into one list 
+
+                    myRoundedList =  [round(x,-1) for x in a]  #Round integers to nearest 10
+
+                    b=[tuple(myRoundedList[i:i+3]) for i in range(0, len(myRoundedList), 3)]  #Group list to a tuple of 3 integers 
+
+                    list_of_pixels = list(b)
+
+                    print('case O')
+                    im2 = Image.new(im.mode, im.size) #Create a new image 
+                    print('case OO')
+
+                    im2.putdata(list_of_pixels) #put image data into the new image 
+                    print('case OOO')
+
+                    im2.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))  #save the file 
+                    print('case p')
+                except:
+                    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                validimg(filename)
+                print('case Q')
                 modelinfo=get_model(filename)
-            
+                print('case4')
                 #opencv image object to perform IMG-Processing
                 cvimg=cv2.imread(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
                 try:
-                    
+                    print('case5')
                     # construct an iamge instance
                     with io.open(os.path.join(app.config['UPLOAD_FOLDER'], filename), 'rb') as image_file:
                         content = image_file.read()
@@ -184,11 +375,15 @@ def index():
                         # Assigning vertices to polygon
                         #cv2.imwrite('static/img/'+filename, cvimg) 
                         #print('static/img/'+filename)
-            
+                    print('case6')
+                    
+
                     return render_template('index.html',imgname=filename,ocr=df['description'][0],labels=labels, objects=objects,modelinfo=modelinfo)
                 except:
+                    print('case7')
                     return render_template('index.html',imgname=filename,modelinfo=modelinfo)
     except:
+        print('case8')
         return render_template('index.html',vinfo="Something is wrong!!")
 
 
@@ -198,46 +393,29 @@ def index():
 
 @app.route('/Pdf', methods=['GET', 'POST'])
 def pdf():
-    try:
-        
-        if request.method == 'POST':        
+      
+    if request.method == 'POST':        
 
-            # check if the post request has the file part
-            if 'file' not in request.files:
-                flash('No file part')
-                return redirect(request.url)
-            file = request.files['file']
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
             # if user does not select file, browser also
             # submit an empty part without filename
-            if file.filename == '':
-                flash('No selected file')
-                return redirect(request.url)
-            if file and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            
-                pdfFileObj = open(os.path.join(app.config['UPLOAD_FOLDER'], filename), 'rb')
-                pdfReader = PyPDF2.PdfFileReader(pdfFileObj)
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            validimg(filename)
 
-                tables = camelot.read_pdf(os.path.join(app.config['UPLOAD_FOLDER'], filename),pages='1-'+str(pdfReader.getNumPages()))
-                #tables.export(os.path.join(app.config['UPLOAD_FOLDER'], 'temp.csv'), f='csv', compress=True)
-                print(pdfReader.getNumPages())
-                tablist=[]
-                try:
-                    for i in range(pdfReader.getNumPages()):
-                        tablist.append(Markup(tables[i].df.to_html(classes='data')))
-                except:
-                    tablist.append("No Table Detected")
-            
-                tab=tables[0].df
-                dftrue=tab.empty
+            return render_template('pdf.html',pdfname=filename)
 
-                ptextlist=[]
-                for i in range(pdfReader.getNumPages()):
-                    ptextlist.append(pdfReader.getPage(i).extractText())
-                return render_template('pdf.html',pdfname=filename,dftrue=dftrue,tables=tablist,titles=tab.columns.values,text=ptextlist)
-    except:
-        return render_template('pdf.html',vinfo="Something is wrong!!")
+
+#    except:
+ #       return render_template('pdf.html',vinfo="Something is wrong!!")
 
     return render_template('pdf.html')
 

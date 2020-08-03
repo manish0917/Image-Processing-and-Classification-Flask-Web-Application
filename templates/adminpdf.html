@@ -1,0 +1,62 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    </script>
+   
+    <title>SIH 2020</title>
+
+
+  </head>
+<body>
+  <div>
+  
+  <table class="table">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">User Name</th>
+      <th scope="col">Files</th>
+      <th scope="col">City</th>
+      <th scope="col">Region</th>
+      <th scope="col">Country</th>
+      <th scope="col">Postal Code</th>
+      <th scope="col">IP Address</th>
+      <th scope="col">Valid</th>
+    </tr>
+  </thead>
+  <tbody>
+    {%if data:%}
+    <tr>
+      <th scope="row">User Identity</th>
+      <form method="post">
+        <input type="text" value="{{data['image']}}" name="filename" style="display: none;">
+      <td>
+      <button class="btn btn-outline-dark" type="submit">
+      {{data['image']}} 
+      
+      </button>
+      </td>
+      </form>
+      <td>{{data['city']}}</td>
+      <td>{{data['region']}}</td>
+      <td>{{data['country']}}</td>
+      <td>{{data['postal']}}</td>
+      <td>{{data['ip']}}</td>
+      <td><button class="btn btn-outline-dark">Valid</button></td>
+    </tr>
+    {%endif%}
+  </tbody>
+</table>
+
+  
+ </div>
+
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+
+</body>
+</html>
