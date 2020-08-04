@@ -1,0 +1,5 @@
+All Model Files Can be found here :
+
+https://drive.google.com/drive/folders/1ryGeG-MHHdvd8BYKiAyVHEgyunZAw72V?usp=sharing
+
+Please Download and add to the location: static\my_model\
