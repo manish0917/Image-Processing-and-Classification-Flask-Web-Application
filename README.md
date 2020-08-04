@@ -33,14 +33,16 @@ Details attached with Uploaded Media
  Used For Identity and Fraud Detection
  
  1. Structured Formatted OCR Text Extraction
+ • Text Extracted From Images/Pdfs under any Scheme will be stored as structured
+format like data frame or in excel or csv format.
+• And this will be used at Admin side for validating the Employment Identity or
+details
+
+
+2. Images Compression
 • High Resolution Compression (Slow Processing)
 • Using ML Algorithm
 • Low Level Compression (Fast Processing)
 • Simple PIL method
 
-2. Images Compression
-• Text Extracted From Images/Pdfs under any Scheme will be stored as structured
-format like data frame or in excel or csv format.
-• And this will be used at Admin side for validating the Employment Identity or
-details
 
