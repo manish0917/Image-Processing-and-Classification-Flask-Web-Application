@@ -6,8 +6,7 @@ Government programs, each portal have image capturing and different document
 uploading features. The validation and type defining of images are done by ML
 (Google Vision AI) , Deep Learning Algorithm (CNN).
 Description :
-• A Hybrid web based application will be created.
-• The application will have individual portal for every Government Programs.
+• The application have individual portal for every Government Programs.
 • Each portal have access to features/tools like
 - Image Capturing tool with Geo tag.
 - Documents and Images Uploading Features 
@@ -33,7 +32,7 @@ Details attached with Uploaded Media
  Used For Identity and Fraud Detection
  
  1. Structured Formatted OCR Text Extraction
- • Text Extracted From Images/Pdfs under any Scheme will be stored as structured
+ • Text Extracted From Images/Pdfs under any Scheme stored as structured
 format like data frame or in excel or csv format.
 • And this will be used at Admin side for validating the Employment Identity or
 details
